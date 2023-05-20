@@ -1,0 +1,31 @@
+/* Input */
+.container {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	width: 100%;
+	min-height: 47px;
+    padding: 10px 0;
+	justify-content: space-around;
+	background-color: var(--clr-accent);
+}
+
+.text {
+	flex: 0.7;
+	border: 0;
+	background-color: var(--clr-select);
+	border-radius: 8px;
+	color: var(--clr-neutral);
+	padding: 10px 15px 0px 15px;
+    margin: 0;
+    max-height: 35px;
+    font-size: 1.4em;
+}
+
+.text::-webkit-input-placeholder {
+	color: var(--clr-passive);
+}
+
+.send {
+	background-image: url("./send.svg");
+}

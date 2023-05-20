@@ -1,0 +1,20 @@
+/* Chats */
+
+.container {
+	display: flex;
+	flex-direction: column;
+	min-width: 20%;
+	background-color: var(--clr-main);
+}
+
+.header {
+	height: 59px;
+	background-color: var(--clr-accent);
+}
+
+.list {
+	flex: 1;
+	margin: 0;
+	padding: 0;
+	overflow-y: auto;
+}

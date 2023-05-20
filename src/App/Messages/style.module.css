@@ -1,0 +1,53 @@
+/* Messages */
+.container {
+	flex: 1;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	background-color: var(--clr-absolute);
+}
+
+.header, .chat {
+	border-left: 1px solid var(--clr-line);
+}
+
+.header {
+	height: 59px;
+	background-color: var(--clr-accent);
+	z-index: 1;
+}
+
+.background {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	left: 0;
+	top: 0;
+	background-image: url("./background.png");
+	background-repeat: repeat;
+	opacity: 0.06;
+	z-index: 0;
+}
+
+.chat {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	z-index: 1;
+}
+
+/* List */
+.list {
+	flex: 1;
+	margin: 0;
+	padding: 0 10%;
+	overflow-y: auto;
+}
+
+.list > li {
+	list-style-type: none;
+}
+
+.message {
+
+}

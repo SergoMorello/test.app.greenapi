@@ -1,0 +1,12 @@
+/* Colors */
+:root {
+	--clr-main: #131B20;
+	--clr-accent: #222C32;
+	--clr-success: #70BBE6;
+	--clr-message: #265B4C;
+	--clr-line: #31383D;
+	--clr-select: #2D3941;
+	--clr-passive: #89969F;
+	--clr-absolute: #0b141a;
+	--clr-neutral: #FFFFFF;
+}
