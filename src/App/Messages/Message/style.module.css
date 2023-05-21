@@ -1,0 +1,64 @@
+/* Message */
+.container {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	justify-content: flex-start;
+}
+
+.container.my {
+	justify-content: flex-end;
+}
+
+.message {
+	display: inline-block;
+	position: relative;
+	min-width: 10%;
+	background-color: var(--clr-accent);
+	border-radius: 10px;
+	padding: 7px 45px 20px 7px;
+	margin: 2px 0;
+}
+
+.message::after {
+	content: "";
+	display: inline-block;
+	position: absolute;
+	top: 0;
+	left: -10px;
+	z-index: -1;
+	border: 10px solid transparent;
+	border-top: 10px solid var(--clr-accent);
+	border-right: 10px solid var(--clr-accent);
+}
+
+.container.my > .message {
+	background-color: var(--clr-message);
+}
+
+.container.my > .message::after {
+	left: unset;
+	right: -10px;
+	z-index: -1;
+	border: 10px solid transparent;
+	border-left: 10px solid var(--clr-message);
+	border-top: 10px solid var(--clr-message);
+}
+
+.text {
+	color: var(--clr-neutral);
+	font-size: 0.9em;
+	white-space: pre-line;
+}
+
+.info {
+	display: block;
+	position: absolute;
+	bottom: 5px;
+    right: 5px;
+}
+
+.date {
+	color: var(--clr-passive);
+    font-size: 0.8em;
+}
