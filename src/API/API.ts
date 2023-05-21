@@ -8,16 +8,20 @@ class API extends Core {
 		API.instance.setUser(idInstance, apiTokenInstance);
 	}
 
-	public static sendMessage(phone: string, text: string): Promise<object> {
-		return API.instance.sendMessage(phone, text);
+	public static getId(): string {
+		return API.instance.getId();
 	}
 
-	public static getChat(phone: string, callback: Function): void {
-		API.instance.getChat(phone, callback);
+	public static sendMessage(phone: string, text: string): void {
+		API.instance.sendMessage(phone, text);
 	}
 
-	public static addListenerChat(phone: string, callback: Function): Event {
-		return API.instance.addListenerChat(phone, callback);
+	public static getChat(phone: string): Promise<object> {
+		return API.instance.getChat(phone);
+	}
+
+	public static addChatListener(phone: string, callback: Function): Event {
+		return API.instance.addChatListener(phone, callback);
 	}
 }
 

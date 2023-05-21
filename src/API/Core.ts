@@ -1,6 +1,10 @@
 import * as whatsAppClient from "@green-api/whatsapp-api-client";
 import EventEmitter,{ Events, Event } from "easy-event-emitter";
-import { User } from "./Types";
+import {
+	User,
+	Settings,
+	NewMessage
+} from "./Types";
 
 class Core {
 	private static events: Events = new EventEmitter;
@@ -8,6 +12,7 @@ class Core {
 		idInstance: '-',
 		apiTokenInstance: '-'
 	};
+	private static settings: Settings;
 
 	private restAPI(): any {
 		return whatsAppClient.restAPI(Core.user);
@@ -19,14 +24,27 @@ class Core {
 			apiTokenInstance: apiTokenInstance
 		};
 		this.startNotifications();
+
+		this.restAPI().settings.getSettings().then((settings: Settings) => {
+			Core.settings = settings;
+		});
 	}
 
-	public sendMessage(phone: string, text: string): Promise<object> {
-		return this.restAPI().message.sendMessage(
-			phone + "@c.us",
+	public getId(): string {
+		return Core.settings?.wid;
+	}
+
+	public sendMessage(phone: string, text: string): void {
+		const chatId = phone + '@c.us';
+		this.restAPI().message.sendMessage(
+			chatId,
 			null,
 			text
-		);
+		).then((newMessage: NewMessage) => Core.events.emit(phone, {
+			idMessage: newMessage.idMessage,
+			chatId: chatId,
+			textMessage: text
+		}));
 	}
 
 	public startNotifications(): void {
@@ -38,24 +56,22 @@ class Core {
 			  this.restAPI().webhookService.stopReceivingNotifications();
 			  //console.log("Notifications is about to stop in 20 sec if no messages will be queued...")
 			});
-			// restAPI.webhookService.onReceivingDeviceStatus((body) => {
-			//   console.log(body);
-			// });
-			// restAPI.webhookService.onReceivingAccountStatus((body) => {
-			//   console.log(body);
-			// });
+			this.restAPI().webhookService.onReceivingDeviceStatus((body: any) => {
+			  console.log(body);
+			});
+			this.restAPI().webhookService.onReceivingAccountStatus((body: any) => {
+			  console.log(body);
+			});
 		  } catch (ex: any) {
 			console.error(ex.toString());
 		  }
 	}
 
-	public getChat(phone: string, callback: Function): void {
-		this.restAPI().message.getChatHistory(phone + '@c.us').then((data: Array<any>) => {
-			callback(data);
-		});
+	public async getChat(phone: string): Promise<object> {
+		return await this.restAPI().message.getChatHistory(phone + '@c.us');
 	}
 
-	public addListenerChat(phone: string, callback: Function): Event {
+	public addChatListener(phone: string, callback: Function): Event {
 		return Core.events.addListener(phone, callback);
 	}
 }

@@ -8,11 +8,7 @@ import * as whatsAppClient from "@green-api/whatsapp-api-client";
 const Messages = () => {
 
 	const sendMessage = (text) => {
-		API.sendMessage('79032419907', text).then((data) => {
-			console.log(data);
-		}).catch((reason) =>{
-			console.error(reason);
-		});;
+		API.sendMessage('79032419907', text);
 	};
 
 	return(<div className={styles['container']}>
