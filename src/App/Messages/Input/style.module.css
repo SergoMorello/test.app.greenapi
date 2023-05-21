@@ -33,6 +33,10 @@
 	width: 24px;
 	height: 24px;
 	cursor: pointer;
+	background: unset;
+	border: 0;
+	margin: 0;
+	padding: 0;
 }
 
 .send::before {
