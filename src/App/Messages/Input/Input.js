@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, forwardRef } from "react";
 import styles from "./style.module.css";
 
-const Input = ({value, onChange, onSubmit, cleanAfterSubmit}) => {
+const Input = forwardRef(({value, onChange, onSubmit},ref) => {
 	const [text, __setText] = useState(value ?? '');
 	const setText = (event) => {
 		const value = event.target.value;
@@ -30,9 +30,9 @@ const Input = ({value, onChange, onSubmit, cleanAfterSubmit}) => {
 	},[value]);
 
 	return(<form className={styles['container']} onSubmit={submit}>
-		<textarea placeholder="Введите сообщение" className={styles['text']} value={text} onChange={setText} onKeyDown={onEnterPress}/>
+		<textarea placeholder="Введите сообщение" className={styles['text']} value={text} onChange={setText} onKeyDown={onEnterPress} ref={ref}/>
 		<button type="submit" className={styles['send']}/>
 	</form>);
-};
+});
 
 export default Input;

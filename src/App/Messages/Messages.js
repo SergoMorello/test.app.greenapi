@@ -1,14 +1,23 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import styles from "./style.module.css";
 import List from "./List";
 import Input from "./Input/Input";
 import API from "../../API/API";
 
 const Messages = () => {
-
+	const inputRef = useRef();
 	const sendMessage = (text) => {
-		API.setChatId('79032419907').sendMessage(text);
+		API.sendMessage(text);
 	};
+
+	useEffect(() => {
+		const listener = API.addListener('changeChatId', () => {
+			inputRef.current.focus();
+		});
+		return () => {
+			listener.remove();
+		}
+	},[]);
 
 	return(<div className={styles['container']}>
 		<div className={styles['background']}/>
@@ -17,7 +26,7 @@ const Messages = () => {
 		</div>
 		<div className={styles['chat']}>
 			<List/>
-			<Input onSubmit={sendMessage}/>
+			<Input onSubmit={sendMessage} ref={inputRef}/>
 		</div>
 		
 	</div>);

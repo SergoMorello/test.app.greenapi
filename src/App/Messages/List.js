@@ -7,7 +7,7 @@ const List = () => {
 	const userId = API.getId();
 	const listRef = useRef();
 	const [data, setData] = useState([]);
-
+	
 	useEffect(() => {
 		const listeners = [];
 
@@ -15,10 +15,23 @@ const List = () => {
 			API.getChat((data) => {
 				setData(data);
 			});
-		}));
-
-		listeners.push(API.addChatListener('79032419907', (newMessage) => {
-			setData((state) => [...state, newMessage]);
+			listeners.push(API.addChatListener((newMessage) => {
+				const messageUserId = newMessage.senderData?.chatId;
+				if (userId === messageUserId) {
+					return;
+				}
+				setData((state) => {
+					const newState = [...state];
+					if (typeof state.find((message) => message.idMessage === newMessage.idMessage) === 'undefined') {
+						newState.push({
+							...newMessage,
+							chatId: messageUserId,
+							textMessage: newMessage.messageData?.textMessageData?.textMessage
+						});
+					}
+					return newState;
+				});
+			}));
 		}));
 
 		return () => {
@@ -27,7 +40,7 @@ const List = () => {
 			}
 		}
 	},[]);
-
+	
 	useEffect(() => {
 		listRef.current.scrollTo(0, listRef.current.scrollHeight);
 	},[data]);

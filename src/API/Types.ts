@@ -7,7 +7,14 @@ export type Settings = {
 	wid: string;
 }
 
-export type NewMessage = {
+export type Message = {
 	idMessage: string;
-	textMessage: string;
+	senderData: {
+		chatId: string;
+	};
+	messageData: {
+		textMessageData: {
+			textMessage: string;
+		};
+	};
 }

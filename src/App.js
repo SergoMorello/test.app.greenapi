@@ -7,18 +7,15 @@ import API from "./API/API";
 
 const App = () => {
 	const [active, setActive] = useState(false);
-	// useEffect(() => {
-	// 	API.configure(
-	// 		'1101823032',
-	// 		'8be3e013b66f4ae3b3a45f58cabb26bed82e4061ec044c299d',
-	// 		() => {
-	// 			setActive(true);
-	// 		}
-	// 	);
-	// },[]);
 
 	useEffect(() => {
 		API.autoLogin(setActive);
+		const listener = API.addListener('logout', () => {
+			setActive(false);
+		});
+		return () => {
+			listener.remove();
+		}
 	},[]);
 
 	return (

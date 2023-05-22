@@ -2,7 +2,7 @@ import Core from "./Core";
 import { Events, Event } from "easy-event-emitter";
 
 class API extends Core {
-	private static instance: API;
+	private static instance: API = new Core;
 
 	public static autoLogin(callback: Function): void {
 		const idInstance = localStorage.getItem('idInstance');
@@ -16,12 +16,13 @@ class API extends Core {
 			return;
 		}
 		API.login(idInstance, apiTokenInstance);
-		API.instance = new Core(callback);
+		API.instance.init(callback);
 	}
 
 	public static logout() {
 		API.instance.stopNotifications();
 		API.login('', '');
+		API.events.emit('logout', true);
 	}
 
 	public static login(idInstance: string, apiTokenInstance: string): void {
@@ -31,6 +32,7 @@ class API extends Core {
 			idInstance: idInstance,
 			apiTokenInstance: apiTokenInstance
 		};
+		API.events.emit('login', true);
 	}
 
 	public static getId(): string {
