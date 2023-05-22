@@ -12,12 +12,12 @@
 
 .message {
 	display: inline-block;
-	position: relative;
-	min-width: 10%;
-	background-color: var(--clr-accent);
-	border-radius: 10px;
-	padding: 7px 45px 20px 7px;
-	margin: 2px 0;
+    position: relative;
+    min-width: 5%;
+    background-color: var(--clr-accent);
+    border-radius: 10px;
+    padding: 3px 40px 12px 7px;
+    margin: 2px 0;
 }
 
 .message::after {

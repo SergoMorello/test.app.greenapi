@@ -8,33 +8,46 @@ import {
 
 class Core {
 	private static events: Events = new EventEmitter;
-	private static user: User = {
+	protected static user: User = {
 		idInstance: '-',
 		apiTokenInstance: '-'
 	};
+	private chatId: string = '';
 	private static settings: Settings;
+
+	constructor(callback?: Function) {
+		this.restAPI().settings.getSettings().then((settings: Settings) => {
+			Core.settings = settings;
+			this.startNotifications();
+			callback!(true);
+		}).catch((e: any) => {
+			callback!(false, e);
+		});
+	}
 
 	private restAPI(): any {
 		return whatsAppClient.restAPI(Core.user);
-	}
-
-	public setUser(idInstance: string, apiTokenInstance: string): void {
-		Core.user = {
-			idInstance: idInstance,
-			apiTokenInstance: apiTokenInstance
-		};
-		this.startNotifications();
-
-		this.restAPI().settings.getSettings().then((settings: Settings) => {
-			Core.settings = settings;
-		});
 	}
 
 	public getId(): string {
 		return Core.settings?.wid;
 	}
 
-	public sendMessage(phone: string, text: string): void {
+	public setChatId(phone: string): Core {
+		this.chatId = phone;
+		Core.events.emit('changeChatId', phone);
+		return this;
+	}
+
+	public getChatId(): string {
+		return this.chatId;
+	}
+
+	public sendMessage(text: string, phoneStatic?: string): void {
+		const phone: string = (phoneStatic ?? this.getChatId());
+		if (!phone) {
+			return;
+		}
 		const chatId = phone + '@c.us';
 		this.restAPI().message.sendMessage(
 			chatId,
@@ -47,15 +60,16 @@ class Core {
 		}));
 	}
 
-	public startNotifications(): void {
+	public async startNotifications(): Promise<void> {
 		try {
-			this.restAPI().webhookService.startReceivingNotifications();
+			await this.restAPI().webhookService.startReceivingNotifications();
 			
 			this.restAPI().webhookService.onReceivingMessageText((body: any) => {
-			  console.log(body);
-			  this.restAPI().webhookService.stopReceivingNotifications();
-			  //console.log("Notifications is about to stop in 20 sec if no messages will be queued...")
-			});
+				console.log(body);
+				this.restAPI().webhookService.stopReceivingNotifications();
+				//console.log("Notifications is about to stop in 20 sec if no messages will be queued...")
+			  });
+			
 			this.restAPI().webhookService.onReceivingDeviceStatus((body: any) => {
 			  console.log(body);
 			});
@@ -67,12 +81,26 @@ class Core {
 		  }
 	}
 
-	public async getChat(phone: string): Promise<object> {
-		return await this.restAPI().message.getChatHistory(phone + '@c.us');
+	public stopNotifications(): void {
+		this.restAPI().webhookService.stopReceivingNotifications();
 	}
 
-	public addChatListener(phone: string, callback: Function): Event {
+	public getChat(callback: Function, phoneStatic?: string): void {
+		const phone: string = (phoneStatic ?? this.getChatId());
+		this.restAPI().message.getChatHistory(phone + '@c.us').then((data: any) => {
+			if (Array.isArray(data)) {
+				callback(data.reverse());
+			}
+		});
+	}
+
+	public addChatListener(callback: Function, phoneStatic?: string, ): Event {
+		const phone: string = (phoneStatic ?? this.getChatId());
 		return Core.events.addListener(phone, callback);
+	}
+
+	public addListener(event: string, callback: Function): Event {
+		return Core.events.addListener(event, callback);
 	}
 }
 

@@ -9,18 +9,22 @@ const List = () => {
 	const [data, setData] = useState([]);
 
 	useEffect(() => {
-		API.getChat('79032419907').then((data) => {
-			if (Array.isArray(data)) {
-				setData(data.reverse());
-			}
-		});
+		const listeners = [];
 
-		const listener = API.addChatListener('79032419907', (newMessage) => {
+		listeners.push(API.addListener('changeChatId', () => {
+			API.getChat((data) => {
+				setData(data);
+			});
+		}));
+
+		listeners.push(API.addChatListener('79032419907', (newMessage) => {
 			setData((state) => [...state, newMessage]);
-		});
+		}));
 
 		return () => {
-			listener.remove();
+			for(const listener of listeners) {
+				listener.remove();
+			}
 		}
 	},[]);
 

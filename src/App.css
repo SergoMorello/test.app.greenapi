@@ -5,4 +5,39 @@
 	flex-wrap: nowrap;
 	width: 100%;
 	height: 100%;
+	background-color: var(--clr-main);
+}
+
+input {
+	border: 0;
+}
+
+input {
+	flex: 0.9;
+	border: 0;
+	background-color: var(--clr-select);
+	border-radius: 8px;
+	color: var(--clr-neutral);
+	padding: 10px;
+    max-height: 35px;
+    font-size: 1.4em;
+}
+
+input::-webkit-input-placeholder {
+	color: var(--clr-passive);
+}
+
+button {
+	border: 0;
+	background-color: var(--clr-message);
+	padding: 8px;
+	border-radius: 7px;
+	color: var(--clr-neutral);
+	font-size: 1.1em;
+	cursor: pointer;
+	transition: 0.2s;
+}
+
+button:hover {
+	background-color: var(--clr-line);
 }

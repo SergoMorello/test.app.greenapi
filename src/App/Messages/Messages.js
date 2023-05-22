@@ -3,12 +3,11 @@ import styles from "./style.module.css";
 import List from "./List";
 import Input from "./Input/Input";
 import API from "../../API/API";
-import * as whatsAppClient from "@green-api/whatsapp-api-client";
 
 const Messages = () => {
 
 	const sendMessage = (text) => {
-		API.sendMessage('79032419907', text);
+		API.setChatId('79032419907').sendMessage(text);
 	};
 
 	return(<div className={styles['container']}>

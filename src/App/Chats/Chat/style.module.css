@@ -1,0 +1,34 @@
+/* Chat */
+.container {
+	display: flex;
+	flex-direction: row;
+	padding: 7px 15px;
+	cursor: pointer;
+	transition: 0.2s;
+}
+
+.container:hover {
+	background-color: var(--clr-line);
+}
+
+.container.active {
+	background-color: var(--clr-select);
+}
+
+.icon {
+	background-color: var(--clr-passive);
+	width: 55px;
+	height: 55px;
+	border-radius: 50%;
+	margin-right: 10px;
+}
+
+.info {
+	display: flex;
+	flex-direction: column;
+}
+
+.info > .title {
+	color: var(--clr-neutral);
+	font-size: 1.2em;
+}

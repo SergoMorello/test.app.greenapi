@@ -8,6 +8,8 @@
 }
 
 .header {
+	display: flex;
+	align-items: center;
 	height: 59px;
 	background-color: var(--clr-accent);
 	box-shadow: 0 1px 3px rgba(var(--clr-shadow-rgb),.4);
@@ -19,4 +21,10 @@
 	margin: 0;
 	padding: 0;
 	overflow-y: auto;
+}
+
+.newChat {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
 }

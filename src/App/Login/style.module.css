@@ -1,0 +1,23 @@
+/* Login */
+.container {
+	flex: 1;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.form {
+	display: flex;
+	flex-direction: column;
+	background-color: var(--clr-accent);
+	padding: 20px;
+	border-radius: 7px;
+}
+
+.form > * {
+	margin: 10px 0;
+}
+
+.form > *:first-child, .form > *:last-child {
+	margin: 0;
+}
