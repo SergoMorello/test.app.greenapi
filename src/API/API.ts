@@ -19,6 +19,10 @@ class API extends Core {
 		API.instance.init(callback);
 	}
 
+	public static destroy(): void {
+		API.instance.destroy();
+	}
+
 	public static logout() {
 		API.instance.stopNotifications();
 		API.login('', '');
@@ -51,8 +55,8 @@ class API extends Core {
 		return API.instance.getChatId();
 	}
 
-	public static getChat(callback: Function, phoneStatic?: string): void {
-		return API.instance.getChat(callback, phoneStatic);
+	public static getChat(callback: Function): void {
+		return API.instance.getChat(callback);
 	}
 
 	public static addChatListener(callback: Function, phoneStatic?: string): Event {

@@ -23,8 +23,13 @@
 	overflow-y: auto;
 }
 
-.newChat {
+.new-chat {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
+	padding: 4px;
+}
+
+.new-chat > *:first-child {
+	margin-right: 4px;
 }

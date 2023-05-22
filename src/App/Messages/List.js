@@ -17,9 +17,6 @@ const List = () => {
 			});
 			listeners.push(API.addChatListener((newMessage) => {
 				const messageUserId = newMessage.senderData?.chatId;
-				if (userId === messageUserId) {
-					return;
-				}
 				setData((state) => {
 					const newState = [...state];
 					if (typeof state.find((message) => message.idMessage === newMessage.idMessage) === 'undefined') {
@@ -46,7 +43,7 @@ const List = () => {
 	},[data]);
 
 	return(<ul className={styles['list']} ref={listRef}>
-		{data.map(({textMessage, timestamp, chatId}, key) => <Message key={key} timestamp={timestamp} my={chatId === userId}>{textMessage}</Message>)}
+		{data.map(({textMessage, timestamp, chatId, type}, key) => <Message key={key} timestamp={timestamp} my={type === 'outgoing'}>{textMessage}</Message>)}
 	</ul>);
 };
 

@@ -1,1 +1,1 @@
-declare module '@green-api/whatsapp-api-client';
+declare module "*.module.css";

@@ -1,4 +1,3 @@
-import * as whatsAppClient from "@green-api/whatsapp-api-client";
 import EventEmitter,{ Events, Event } from "easy-event-emitter";
 import {
 	User,
@@ -31,7 +30,7 @@ type MessageHistory = {
 	statusMessage: string;
 	textMessage: string;
 	timestamp: number;
-	type: string;
+	type: ['incoming','outgoing'];
 	typeMessage: string;
 }
 
@@ -58,6 +57,11 @@ class Core {
 				callback!(false, e);
 			}
 		});
+	}
+
+	public destroy(): void {
+		this.stopNotifications();
+		Core.events.removeAllListeners();
 	}
 
 	private query(params: Query, method: string = 'POST'): void {
@@ -152,9 +156,9 @@ class Core {
 		return Core.settings?.wid;
 	}
 
-	public setChatId(phone: string): Core {
-		this.chatId = phone;
-		Core.events.emit('changeChatId', phone);
+	public setChatId(id: string): Core {
+		this.chatId = id;
+		Core.events.emit('changeChatId', this.chatId);
 		return this;
 	}
 
@@ -163,11 +167,7 @@ class Core {
 	}
 
 	public sendMessage(text: string, phoneStatic?: string): void {
-		const phone: string = (phoneStatic ?? this.getChatId());
-		if (!phone) {
-			return;
-		}
-		const chatId = phone + '@c.us';
+		const chatId: string = (phoneStatic ?? this.getChatId());
 		this.post({
 			method: 'SendMessage',
 			data: {
@@ -178,13 +178,14 @@ class Core {
 				Core.events.emit(chatId, <Message>{
 					idMessage: message.idMessage,
 					senderData: {
-						chatId: chatId,
+						chatId: this.getId(),
 					},
 					messageData: {
 						textMessageData: {
 							textMessage: text
 						}
-					}
+					},
+					type: 'outgoing'
 				});
 			}
 		});
@@ -196,9 +197,15 @@ class Core {
 				method: 'ReceiveNotification',
 				success: (data) => {
 					if (data) {
-						Core.events.emit('recive-notification', data);
-						if (data.body) {
-							Core.events.emit(data.body?.senderData?.chatId, data?.body);
+						Core.events.emit('reciveNotification', data);
+						if (data.body && data.body?.typeWebhook === 'outgoingAPIMessageReceived') {
+							const body: any = data?.body;
+							Core.events.emit(data.body?.senderData?.chatId, body);
+							this.setLastMessage({
+								...body,
+								chatId: body?.senderData.chatId,
+								textMessage: body?.messageData?.extendedTextMessageData.text
+							});
 						}
 						this.query({
 							method: 'DeleteNotification',
@@ -222,25 +229,33 @@ class Core {
 		clearTimeout(this.notificationTimer);
 	}
 
-	public getChat(callback: Function, phoneStatic?: string): void {
-		const phone: string = (phoneStatic ?? this.getChatId());
+	private setLastMessage(message: any) {
+		Core.events.emit('lastChatMessage', message);
+	}
+
+	public getChat(callback: Function): void {
+		const chatId: string = this.getChatId();
 		this.post({
 			method: 'GetChatHistory',
 			data: {
-				chatId: phone + '@c.us'
+				chatId: chatId
 			},
 			success: (chat: Array<MessageHistory>) => {
-				callback(chat.reverse());
+				const dataChat = chat.reverse();
+				callback(dataChat);
+				if (dataChat.length > 0) {
+					this.setLastMessage(dataChat[dataChat.length - 1]);
+				}
 			}
 		});
 	}
 
 	public addNotificationListener(callback: Function): Event {
-		return Core.events.addListener('recive-notification', callback);
+		return Core.events.addListener('reciveNotification', callback);
 	}
 
 	public addChatListener(callback: Function, phoneStatic?: string): Event {
-		const chatId: string = (phoneStatic ?? this.getChatId()) + '@c.us';
+		const chatId: string = (phoneStatic ?? this.getChatId());
 		return Core.events.addListener(chatId, callback);
 	}
 

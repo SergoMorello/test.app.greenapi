@@ -15,6 +15,7 @@ const App = () => {
 		});
 		return () => {
 			listener.remove();
+			API.destroy();
 		}
 	},[]);
 

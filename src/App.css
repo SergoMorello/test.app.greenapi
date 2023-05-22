@@ -20,7 +20,7 @@ input {
 	color: var(--clr-neutral);
 	padding: 10px;
     max-height: 35px;
-    font-size: 1.4em;
+    font-size: 1.1em;
 }
 
 input::-webkit-input-placeholder {
