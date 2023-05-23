@@ -206,7 +206,8 @@ class Core {
 						messageData: {
 							textMessageData: {
 								textMessage: text
-							}
+							},
+							typeMessage: 'textMessage'
 						},
 					}
 					
@@ -221,8 +222,14 @@ class Core {
 	 * @returns {string}
 	 */
 	public getNotificationText(notification: Notification): string {
-		return notification.body?.messageData.typeMessage === 'extendedTextMessage' ?
-		notification.body?.messageData.extendedTextMessageData!.text : notification.body?.messageData.textMessageData!.textMessage;
+		switch(notification.body?.messageData.typeMessage) {
+			case 'extendedTextMessage':
+				return notification.body?.messageData.extendedTextMessageData!.text;
+			case 'textMessage':
+				return notification.body?.messageData.textMessageData!.textMessage;
+			default:
+				return '';
+		}
 	}
 
 	/**
