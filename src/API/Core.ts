@@ -221,7 +221,7 @@ class Core {
 	 * @returns {string}
 	 */
 	public getNotificationText(notification: Notification): string {
-		return notification.body?.typeWebhook === 'outgoingAPIMessageReceived' ?
+		return notification.body?.messageData.typeMessage === 'extendedTextMessage' ?
 		notification.body?.messageData.extendedTextMessageData!.text : notification.body?.messageData.textMessageData!.textMessage;
 	}
 
@@ -248,7 +248,6 @@ class Core {
 				method: 'ReceiveNotification',
 				success: (data: Notification) => {
 					if (data) {
-						console.log(data)
 						Core.events.emit('reciveNotification', data);
 						if (data.body && (
 							data.body.typeWebhook === 'outgoingAPIMessageReceived' || 

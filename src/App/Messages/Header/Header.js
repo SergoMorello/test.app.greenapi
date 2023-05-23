@@ -4,21 +4,27 @@ import API from "../../../API/API";
 import { showTime } from "../../../Helpers";
 
 const Header = () => {
+	const [chatId, setChatId] = useState('');
 	const [currentContact, setCurrentContact] = useState({
 		title: '',
 		timestamp: 0
 	});
+
 	useEffect(() => {
-		const listener = API.addListener('changeChatId', (chatId) => {
+		if (chatId) {
 			setCurrentContact(API.getContact(chatId));
-		});
+		}
+	},[chatId]);
+
+	useEffect(() => {
+		const listener = API.addListener('changeChatId', setChatId);
 
 		return () => {
 			listener.remove();
 		}
 	},[]);
-
-	if (!currentContact.title) {
+	
+	if (currentContact && currentContact.title === '') {
 		return(null);
 	}
 
