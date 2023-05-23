@@ -1,38 +1,16 @@
-import EventEmitter,{ Events, Event } from "easy-event-emitter";
+import EventEmitter,{
+	Events,
+	Event
+} from "easy-event-emitter";
 import {
 	User,
 	Settings,
-	Message
+	Message,
+	Query,
+	MessageHistory,
+	Notification,
+	Contact
 } from "./Types";
-
-type Query = {
-	method: string;
-	data?: {
-		[index: string]: any;
-	}
-	success?(data: any): void;
-	fail?(e: any): void;
-	error?(e: any): void;
-	complete?(e: any): void;
-}
-
-type MessageHistory = {
-	chatId: string;
-	extendedTextMessage: {
-		text: string,
-		description: string,
-		title: string,
-		previewType: string,
-		jpegThumbnail: string
-	};
-	idMessage: string;
-	sendByApi: boolean;
-	statusMessage: string;
-	textMessage: string;
-	timestamp: number;
-	type: ['incoming','outgoing'];
-	typeMessage: string;
-}
 
 class Core {
 	protected static events: Events = new EventEmitter;
@@ -41,9 +19,10 @@ class Core {
 		apiTokenInstance: '-'
 	};
 	private static urlAPI: string = 'https://api.green-api.com';
+	private static settings: Settings;
+	protected static contacts: Array<Contact> = [];
 	private chatId: string = '';
 	private notificationTimer: NodeJS.Timeout = setTimeout(()=>{});
-	private static settings: Settings;
 
 	public init(callback?: Function) {
 		this.get({
@@ -175,47 +154,69 @@ class Core {
 				message: text
 			},
 			success: (message: Message) => {
-				Core.events.emit(chatId, <Message>{
-					idMessage: message.idMessage,
-					senderData: {
-						chatId: this.getId(),
-					},
-					messageData: {
-						textMessageData: {
-							textMessage: text
-						}
-					},
-					type: 'outgoing'
+				Core.events.emit(chatId, <Notification>{
+					body: {
+						idMessage: message.idMessage,
+						senderData: {
+							chatId: this.getId(),
+						},
+						messageData: {
+							textMessageData: {
+								textMessage: text
+							}
+						},
+					}
+					
 				});
 			}
 		});
 	}
 
+	/**
+	 * Get text from notification
+	 * @param {Notification} notification Notification object
+	 * @returns {string}
+	 */
+	public getNotificationText(notification: Notification): string {
+		return notification.body?.typeWebhook === 'outgoingAPIMessageReceived' ?
+		notification.body?.messageData.extendedTextMessageData!.text : notification.body?.messageData.textMessageData!.textMessage;
+	}
+
+	/**
+	 * Start notification checker
+	 * @returns {void}
+	 */
 	public startNotifications(): void {
+
+		const deleteNotification = (receiptId: number) => {
+			this.query({
+				method: 'DeleteNotification',
+				data: {
+					receiptId: receiptId
+				},
+				error: (e) => {
+					console.error(e)
+				}
+			},'DELETE');
+		};
+		
 		const start = () => {
 			this.get({
 				method: 'ReceiveNotification',
-				success: (data) => {
+				success: (data: Notification) => {
 					if (data) {
+						console.log(data)
 						Core.events.emit('reciveNotification', data);
-						if (data.body && data.body?.typeWebhook === 'outgoingAPIMessageReceived') {
-							const body: any = data?.body;
-							Core.events.emit(data.body?.senderData?.chatId, body);
-							this.setLastMessage({
-								...body,
-								chatId: body?.senderData.chatId,
-								textMessage: body?.messageData?.extendedTextMessageData.text
-							});
+						if (data.body && (
+							data.body.typeWebhook === 'outgoingAPIMessageReceived' || 
+							data.body.typeWebhook === 'outgoingMessageReceived' ||
+							data.body.typeWebhook === 'incomingMessageReceived'
+						)) {
+							
+							Core.events.emit(data.body.senderData.chatId, data);
+							this.setLastMessage(data);
 						}
-						this.query({
-							method: 'DeleteNotification',
-							data: {
-								receiptId: data.receiptId
-							},
-							error: (e) => {
-								console.log(e)
-							}
-						},'DELETE');
+						deleteNotification(data.receiptId);
 					}
 				}
 			})
@@ -225,15 +226,31 @@ class Core {
 		
 	}
 
+	/**
+	 * Stop all notifications
+	 * @returns {void}
+	 */
 	public stopNotifications(): void {
 		clearTimeout(this.notificationTimer);
 	}
 
-	private setLastMessage(message: any) {
+	/**
+	 * Set last message chat history
+	 * @param {MessageHistory} message
+	 * @returns {void}
+	 */
+	private setLastMessage(message: MessageHistory | Notification): void {
+		const lastMessage: MessageHistory = <MessageHistory>message;
+		if ('receiptId' in message) {
+			lastMessage.chatId = message.body.instanceData.wid;
+			lastMessage.textMessage = this.getNotificationText(message);
+			lastMessage.timestamp = message.body.timestamp;
+		}
+		
 		Core.events.emit('lastChatMessage', message);
 	}
 
-	public getChat(callback: Function): void {
+	public getChatHistory(callback: Function): void {
 		const chatId: string = this.getChatId();
 		this.post({
 			method: 'GetChatHistory',

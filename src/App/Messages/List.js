@@ -12,18 +12,20 @@ const List = () => {
 		const listeners = [];
 
 		listeners.push(API.addListener('changeChatId', () => {
-			API.getChat((data) => {
+			API.getChatHistory((data) => {
 				setData(data);
 			});
+
 			listeners.push(API.addChatListener((newMessage) => {
-				const messageUserId = newMessage.senderData?.chatId;
+				const messageUserId = newMessage.body.senderData?.chatId;
 				setData((state) => {
 					const newState = [...state];
-					if (typeof state.find((message) => message.idMessage === newMessage.idMessage) === 'undefined') {
+					if (typeof state.find((message) => message.idMessage === newMessage?.body.idMessage) === 'undefined') {
 						newState.push({
-							...newMessage,
+							...newMessage.body,
 							chatId: messageUserId,
-							textMessage: newMessage.messageData?.textMessageData?.textMessage
+							textMessage: API.getNotificationText(newMessage),
+							type: messageUserId === userId ? 'outgoing' : 'incoming'
 						});
 					}
 					return newState;

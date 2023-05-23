@@ -1,5 +1,5 @@
 /**
- * Show time for components
+ * Show time in components
  * @param timestamp Date timestamp
  * @returns String time 00:00
  */

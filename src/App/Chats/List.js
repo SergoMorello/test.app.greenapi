@@ -22,9 +22,13 @@ const List = () => {
 			message: '',
 			timestamp: 0
 		};
-		selectChat(newChat.id);
-		setData((state) => [...state, newChat]);
 		setNewPhone('');
+		selectChat(newChat.id);
+		if (API.hasContact(newChat.id)) {
+			return;
+		}
+		API.pushContact(newChat);
+		setData((state) => [...state, newChat]);
 	};
 
 	const selectChat = (phone) => {
@@ -32,13 +36,19 @@ const List = () => {
 	};
 
 	const setLastMessage = (message) => {
-		setData((state) => {
-			return state.map((mes) => mes.id === message.chatId ? {
-				...mes,
-				message: message.textMessage,
-				timestamp: message.timestamp
-			} : mes);
-		});
+		setData((state) => state.map((mes) => {
+			if (mes.id === message.chatId) {
+				const updatedMes = {
+					...mes,
+					message: message.textMessage,
+					timestamp: message.timestamp
+				};
+				API.updateContact(mes.id, updatedMes);
+				return updatedMes;
+			}else{
+				return mes;
+			}
+		}));
 	};
 
 	useEffect(() => {
@@ -47,6 +57,8 @@ const List = () => {
 		listeners.push(API.addListener('changeChatId', setSelectChatId));
 
 		listeners.push(API.addListener('lastChatMessage', setLastMessage));
+
+		setData(API.getContacts());
 
 		return () => {
 			for(const listener of listeners) {

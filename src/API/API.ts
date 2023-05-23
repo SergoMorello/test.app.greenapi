@@ -1,5 +1,11 @@
 import Core from "./Core";
-import { Events, Event } from "easy-event-emitter";
+import {
+	Event
+} from "easy-event-emitter";
+import {
+	Notification,
+	Contact
+} from "./Types";
 
 class API extends Core {
 	private static instance: API = new Core;
@@ -21,6 +27,37 @@ class API extends Core {
 
 	public static destroy(): void {
 		API.instance.destroy();
+	}
+
+	public static getContacts(): Array<Contact> {
+		var ret: Array<Contact> = [];
+		const rawContacts = localStorage.getItem('contacts');
+		if (rawContacts?.length) {
+			const jsonContacts: any = JSON.parse(rawContacts);
+			if (Array.isArray(jsonContacts)) {
+				ret = jsonContacts;
+			}
+		}
+		Core.contacts = ret;
+		return ret;
+	}
+
+	private static saveContacts(contacts: Array<Contact>): void {
+		localStorage.setItem('contacts', JSON.stringify(contacts));
+	}
+
+	public static pushContact(contact: Contact): void {
+		Core.contacts.push(contact);
+		API.saveContacts(Core.contacts);
+	}
+
+	public static updateContact(id: string, contact: Contact): void {
+		//Core.contacts = Core.contacts.map((oldContact: Contact) => id === contact.id ? contact : oldContact);
+		//API.saveContacts(Core.contacts);
+	}
+
+	public static hasContact(id: string): boolean {
+		return Core.contacts.findIndex((contact: Contact) => contact.id === id) >= 0;
 	}
 
 	public static logout() {
@@ -55,8 +92,12 @@ class API extends Core {
 		return API.instance.getChatId();
 	}
 
-	public static getChat(callback: Function): void {
-		return API.instance.getChat(callback);
+	public static getChatHistory(callback: Function): void {
+		return API.instance.getChatHistory(callback);
+	}
+
+	public static getNotificationText(notification: Notification): string {
+		return API.instance.getNotificationText(notification);
 	}
 
 	public static addChatListener(callback: Function, phoneStatic?: string): Event {

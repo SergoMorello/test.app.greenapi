@@ -3,7 +3,6 @@ import styles from "./style.module.css";
 import { showTime } from "../../../Helpers";
 
 const Chat = ({title, message, timestamp, id, active, onClick}) => {
-
 	const click = () => {
 		if (typeof onClick === 'function') {
 			onClick(id);
