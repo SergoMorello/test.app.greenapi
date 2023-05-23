@@ -41,7 +41,11 @@ const List = () => {
 	},[]);
 	
 	useEffect(() => {
-		listRef.current.scrollTo(0, listRef.current.scrollHeight);
+		listRef.current.scrollTo({
+			top: listRef.current.scrollHeight,
+			left: 0,
+			behavior: 'smooth'
+		  });
 	},[data]);
 
 	return(<ul className={styles['list']} ref={listRef}>

@@ -1,8 +1,14 @@
+/**
+ * User type
+ */
 export type User = {
 	idInstance: string;
 	apiTokenInstance: string;
 }
 
+/**
+ * Settings type
+ */
 export type Settings = {
 	wid: string;
 }
@@ -45,7 +51,7 @@ export type MessageHistory = {
 	statusMessage: string;
 	textMessage: string;
 	timestamp: number;
-	type: ['incoming','outgoing'];
+	type: string;
 	typeMessage: ['textMessage', 'extendedTextMessage'];
 }
 

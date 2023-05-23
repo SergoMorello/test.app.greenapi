@@ -11,7 +11,7 @@ const Chats = () => {
 
 	return(<div className={styles['container']}>
 		<div className={styles['header']}>
-			<button onClick={logout}>Exit</button>
+			<button onClick={logout}>Logout</button>
 		</div>
 		<List/>
 	</div>);

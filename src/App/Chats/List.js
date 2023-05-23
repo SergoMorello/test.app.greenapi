@@ -58,7 +58,7 @@ const List = () => {
 
 		listeners.push(API.addListener('lastChatMessage', setLastMessage));
 
-		setData(API.getContacts());
+		setData([...API.getContacts()]);
 
 		return () => {
 			for(const listener of listeners) {
@@ -72,9 +72,13 @@ const List = () => {
 			<InputMask mask="+9 (999) 999-99-99" placeholder="Phone number" value={newPhone} onChange={phoneHandle}/>
 			<button type="submit">+</button>
 		</form>
-		<ul className={styles['list']}>
-			{data.map((chat, key) => <Chat key={key} title={chat.title} message={chat.message} timestamp={chat.timestamp} id={chat.id} active={selectChatId === chat.id} onClick={selectChat}/>)}
-		</ul>
+		{
+			data.length > 0 ? <ul className={styles['list']}>
+				{data.map((chat, key) => <Chat key={key} title={chat.title} message={chat.message} timestamp={chat.timestamp} id={chat.id} active={selectChatId === chat.id} onClick={selectChat}/>)}
+			</ul> :
+			<div className={styles['empty-block']}>Empty</div>
+		}
+		
 	</>);
 };
 

@@ -11,20 +11,47 @@
 	background-color: var(--clr-accent);
 }
 
-.text {
+.text-container {
 	flex: 0.9;
-	border: 0;
+	display: flex;
 	background-color: var(--clr-select);
 	border-radius: 8px;
+	padding: 3px;
+	margin: 0 5px
+}
+
+.text {
+	flex: 1;
+	border: 0;
+	background-color: transparent;
 	color: var(--clr-neutral);
-	padding: 10px 15px 0px 15px;
-	margin: 0 10px;
-    max-height: 35px;
-    font-size: 1.4em;
+	padding: 3px 0 0 0;
+	margin: 5px 10px 5px 10px;
+    max-height: 135px;
+    font-size: 1.3em;
 }
 
 .text::-webkit-input-placeholder {
 	color: var(--clr-passive);
+}
+
+.text::-webkit-scrollbar {
+	width: 5px;
+	height: 5px;
+	background: transparent;
+}
+
+
+.text::-webkit-scrollbar-thumb {
+	background-color: var(--clr-passive);
+	border: 0;
+}
+
+.send-container {
+	flex: 0.1;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .send {

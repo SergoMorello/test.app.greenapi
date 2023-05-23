@@ -1,6 +1,9 @@
 import React from "react";
 import styles from "./style.module.css";
-import { showTime } from "../../../Helpers";
+import {
+	showTime,
+	cuteText
+} from "../../../Helpers";
 
 const Chat = ({title, message, timestamp, id, active, onClick}) => {
 	const click = () => {
@@ -15,7 +18,7 @@ const Chat = ({title, message, timestamp, id, active, onClick}) => {
 		</div>
 		<div className={styles['info']}>
 			<div className={styles['title']}>{title}</div>
-			<div className={styles['message']}>{message}</div>
+			<div className={styles['message']}>{cuteText(message, 10)}</div>
 		</div>
 		<div className={styles['status']}>
 			<div className={styles['timestamp']}>{showTime(timestamp)}</div>

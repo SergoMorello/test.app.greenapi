@@ -1,7 +1,8 @@
-import React, { useEffect, useState, forwardRef } from "react";
+import React, { useEffect, useState, forwardRef, useRef, useImperativeHandle } from "react";
 import styles from "./style.module.css";
 
 const Input = forwardRef(({value, onChange, onSubmit},ref) => {
+	const inputRef = useRef();
 	const [text, __setText] = useState(value ?? '');
 	const setText = (event) => {
 		const value = event.target.value;
@@ -25,13 +26,28 @@ const Input = forwardRef(({value, onChange, onSubmit},ref) => {
 		}
 	};
 
+	useImperativeHandle(ref, () => inputRef.current);
+
 	useEffect(() => {
 		__setText(value);
 	},[value]);
 
+	useEffect(() => {
+		if (!inputRef.current) {
+			return;
+		}
+		inputRef.current.style.height = 0;
+		const height = inputRef.current.scrollHeight;
+		inputRef.current.style.height = height + 'px';
+	},[text]);
+
 	return(<form className={styles['container']} onSubmit={submit}>
-		<textarea placeholder="Введите сообщение" className={styles['text']} value={text} onChange={setText} onKeyDown={onEnterPress} ref={ref}/>
-		<button type="submit" className={styles['send']}/>
+		<div className={styles['text-container']}>
+			<textarea placeholder="Введите сообщение" className={styles['text']} value={text} onChange={setText} onKeyDown={onEnterPress} ref={inputRef}/>
+		</div>
+		<div className={styles['send-container']}>
+			<button type="submit" className={styles['send']}/>
+		</div>
 	</form>);
 });
 
